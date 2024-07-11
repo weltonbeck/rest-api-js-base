@@ -1,4 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
+import z from 'zod'
+import { idRequestSchema } from '../../../schemas/commonSchemas'
+import { createUserRequestSchema } from '../schemas/userSchemas'
 
 let usersData = [
   { id: 1, name: 'Ciclano' },
@@ -6,7 +9,12 @@ let usersData = [
   { id: 3, name: 'Fulano' },
 ]
 
-export const get = async (request: FastifyRequest, reply: FastifyReply) => {
+export const get = async (
+  request: FastifyRequest<{
+    Params: z.infer<typeof idRequestSchema>
+  }>,
+  reply: FastifyReply,
+) => {
   const { id } = request.params
 
   const user = usersData.find((user) => Number(user.id) === id)
@@ -22,12 +30,18 @@ export const list = async (request: FastifyRequest, reply: FastifyReply) => {
   return reply.send(usersData)
 }
 
-export const create = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { name } = request.body
+export const create = async (
+  request: FastifyRequest<{
+    Body: z.infer<typeof createUserRequestSchema>
+  }>,
+  reply: FastifyReply,
+) => {
+  const { name, email } = request.body
 
   const userTemp = {
     id: usersData.length + 1,
     name,
+    email,
   }
 
   usersData.push(userTemp)
@@ -35,7 +49,13 @@ export const create = async (request: FastifyRequest, reply: FastifyReply) => {
   return reply.code(201).send(userTemp)
 }
 
-export const update = async (request: FastifyRequest, reply: FastifyReply) => {
+export const update = async (
+  request: FastifyRequest<{
+    Params: z.infer<typeof idRequestSchema>
+    Body: z.infer<typeof createUserRequestSchema>
+  }>,
+  reply: FastifyReply,
+) => {
   const { id } = request.params
   const { name } = request.body
 
@@ -54,7 +74,12 @@ export const update = async (request: FastifyRequest, reply: FastifyReply) => {
   return reply.send(user)
 }
 
-export const remove = async (request: FastifyRequest, reply: FastifyReply) => {
+export const remove = async (
+  request: FastifyRequest<{
+    Params: z.infer<typeof idRequestSchema>
+  }>,
+  reply: FastifyReply,
+) => {
   const { id } = request.params
 
   const user = usersData.find((user) => Number(user.id) === id)

@@ -5,6 +5,7 @@ import fastifySwaggerUi from '@fastify/swagger-ui'
 export const swaggerRoutes = async (app: FastifyInstance) => {
   const swaggerOptions = {
     openapi: {
+      openapi: '3.1.0',
       info: {
         title: 'RESTful API',
         description: '',
@@ -21,6 +22,7 @@ export const swaggerRoutes = async (app: FastifyInstance) => {
   const swaggerUiOptions = {
     routePrefix: '/docs',
     exposeRoute: true,
+    staticCSP: true,
   }
 
   app.register(fastifySwagger, swaggerOptions)
