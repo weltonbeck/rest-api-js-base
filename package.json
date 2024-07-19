@@ -9,7 +9,16 @@
     "dev": "tsx watch src/server/server.ts",
     "lint": "eslint src",
     "lint:fix": "npm run lint --fix",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test jest",
+    "prisma:studio": "npx prisma studio",
+    "prisma:generate": "npx prisma generate",
+    "prisma:deploymigration": "npx prisma migrate deploy",
+    "prisma:createmigration": "npx prisma migrate dev --create-only",
+    "prisma:applymigration": "npx prisma migrate dev",
+    "prisma:migrate": "npm run applymigration && npm run generate",
+    "docker": "npm run docker:up",
+    "docker:up": "docker compose up",
+    "docker:down": "docker compose down"
   },
   "author": "",
   "license": "ISC",
@@ -20,9 +29,11 @@
   "dependencies": {
     "@fastify/swagger": "^8.14.0",
     "@fastify/swagger-ui": "^4.0.0",
+    "@prisma/client": "^5.17.0",
     "dotenv": "^16.4.5",
     "fastify": "^4.28.0",
     "fastify-zod": "^1.4.0",
+    "prisma": "^5.17.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

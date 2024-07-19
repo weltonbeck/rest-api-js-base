@@ -1,15 +1,14 @@
 import { FastifyInstance } from 'fastify'
-import { healthcheck } from '../controllers/pagesControler'
+import { healthcheck } from '../controllers/pages.controller'
 
 export const pagesRoutes = async (app: FastifyInstance) => {
   app.get('/', {
     schema: {
-      tags: ['Default'],
       response: {
         200: {
           type: 'object',
           properties: {
-            status: { type: 'string' },
+            success: { type: 'boolean' },
           },
         },
       },

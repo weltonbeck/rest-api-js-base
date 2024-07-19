@@ -1,5 +1,12 @@
-node_modules
-dist
 package-lock.json
 .DS_Store
 .env
+
+# modulos
+node_modules
+
+# projeto compilado
+dist
+
+# pasta do postgres
+postgres_data

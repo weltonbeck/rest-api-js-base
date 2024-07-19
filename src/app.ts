@@ -1,8 +1,8 @@
 import 'dotenv/config'
 import fastify from 'fastify'
-import { routes } from './routes/routes'
-import { swaggerRoutes } from './routes/swagger'
-import { commonsSchemas } from './schemas/commonSchemas'
+import { routes } from './routes'
+import { swaggerRoutes } from './swagger.config'
+import { commonsSchemas } from './utils/common.schema'
 
 const app = fastify()
 
