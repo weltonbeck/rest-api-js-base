@@ -53,6 +53,17 @@ describe('admin.users.controller', () => {
       validateUser(response.body.data)
       expect(response.body.data.name).toEqual(dataSend.name)
     })
+
+    it('should not be able to create a new', async () => {
+      const response = await request(app.server).post('/admin/users').send({})
+      expect(response.status).toBe(400)
+      expect(response.body).toHaveProperty('error')
+      expect(response.body.error).toEqual('validation')
+      expect(response.body).toHaveProperty('message')
+      expect(response.body.message).toContain(
+        "body must have required property 'name'",
+      )
+    })
   })
 
   describe('update', () => {

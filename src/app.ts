@@ -3,8 +3,16 @@ import fastify from 'fastify'
 import { routes } from './routes'
 import { swaggerRoutes } from './swagger.config'
 import { commonsSchemas } from './utils/common.schema'
+import { errorHandler } from './utils/errorHandler'
 
-const app = fastify()
+const app = fastify({
+  // logger: true,
+  ajv: {
+    customOptions: {
+      allErrors: true,
+    },
+  },
+})
 
 app.register((server, _, done) => {
   if (process.env.SHOW_DOC && process.env.SHOW_DOC === 'true') {
@@ -18,5 +26,7 @@ app.register((server, _, done) => {
   server.register(routes)
   done()
 })
+
+app.setErrorHandler(errorHandler)
 
 export default app

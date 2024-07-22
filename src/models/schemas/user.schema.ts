@@ -1,6 +1,10 @@
 import { buildJsonSchemas } from 'fastify-zod'
 import { z } from 'zod'
-import { commonProps, idProps } from '../../utils/common.schema'
+import {
+  commonProps,
+  convertAllPropsToOptional,
+  idProps,
+} from '../../utils/common.schema'
 
 export const userProps = {
   name: z.string({
@@ -20,10 +24,7 @@ export const userSchema = z.object({
 })
 
 export const createUserSchema = z.object(userProps)
-export const updateUserSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().email().optional(),
-})
+export const updateUserSchema = z.object(convertAllPropsToOptional(userProps))
 
 export const { schemas: userSchemas, $ref } = buildJsonSchemas(
   {
