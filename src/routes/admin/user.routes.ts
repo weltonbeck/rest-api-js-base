@@ -14,88 +14,103 @@ export const userRoutes = async (app: FastifyInstance) => {
     app.addSchema(schema)
   }
 
-  app.get('/', {
-    schema: {
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            data: {
-              type: 'array',
-              items: $ref('userSchema'),
+  app.get(
+    '/',
+    {
+      schema: {
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: {
+                type: 'array',
+                items: $ref('userSchema'),
+              },
             },
           },
         },
       },
     },
-    handler: list,
-  })
+    list,
+  )
 
-  app.get('/:id', {
-    schema: {
-      params: $refCommon('idSchema'),
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            data: $ref('userSchema'),
+  app.get(
+    '/:id',
+    {
+      schema: {
+        params: $refCommon('idSchema'),
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: $ref('userSchema'),
+            },
           },
-        },
-        404: $refCommon('errorSchema'),
-      },
-    },
-    handler: getOne,
-  })
-
-  app.post('/', {
-    schema: {
-      body: $ref('createUserSchema'),
-      response: {
-        201: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            data: $ref('userSchema'),
-          },
+          404: $refCommon('errorSchema'),
         },
       },
     },
-    handler: create,
-  })
+    getOne,
+  )
 
-  app.put('/:id', {
-    schema: {
-      params: $refCommon('idSchema'),
-      body: $ref('updateUserSchema'),
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            data: $ref('userSchema'),
+  app.post(
+    '/',
+    {
+      schema: {
+        body: $ref('createUserSchema'),
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: $ref('userSchema'),
+            },
           },
         },
-        404: $refCommon('errorSchema'),
       },
     },
-    handler: update,
-  })
+    create,
+  )
 
-  app.delete('/:id', {
-    schema: {
-      params: $refCommon('idSchema'),
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
+  app.put(
+    '/:id',
+    {
+      schema: {
+        params: $refCommon('idSchema'),
+        body: $ref('updateUserSchema'),
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              data: $ref('userSchema'),
+            },
           },
+          404: $refCommon('errorSchema'),
         },
-        404: $refCommon('errorSchema'),
       },
     },
-    handler: remove,
-  })
+    update,
+  )
+
+  app.delete(
+    '/:id',
+    {
+      schema: {
+        params: $refCommon('idSchema'),
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+            },
+          },
+          404: $refCommon('errorSchema'),
+        },
+      },
+    },
+    remove,
+  )
 }

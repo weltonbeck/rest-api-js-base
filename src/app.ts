@@ -3,7 +3,7 @@ import fastify from 'fastify'
 import { routes } from './routes'
 import { swaggerRoutes } from './swagger.config'
 import { commonsSchemas } from './utils/common.schema'
-import { errorHandler } from './utils/errorHandler'
+import { errorHandler } from './utils/errors/errorHandler'
 
 const app = fastify({
   // logger: true,

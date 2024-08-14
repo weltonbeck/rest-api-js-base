@@ -1,27 +1,44 @@
 import request from 'supertest'
-import app from '../../app'
-
-export const validateUser = (data: unknown) => {
-  expect(data).toHaveProperty('id')
-  expect(data).toHaveProperty('name')
-  expect(data).toHaveProperty('email')
-}
+import app from '../../../src/app'
+import { clearAllMocks, mockAll } from '../../mocks'
+import { userValidation } from '../../model/entities/user.validate'
 
 describe('admin.users.controller', () => {
   beforeAll(async () => {
     await app.ready()
   })
 
-  afterAll(() => app.close())
+  afterAll(() => {
+    app.close()
+  })
+
+  beforeEach(async () => {
+    await mockAll()
+  })
+
+  afterEach(async () => {
+    await clearAllMocks()
+  })
 
   describe('get one', () => {
     it('should be able to get one', async () => {
-      const response = await request(app.server).get('/admin/users/1')
+      const response = await request(app.server).get(
+        '/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627',
+      )
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
       expect(response.body).toHaveProperty('data')
-      validateUser(response.body.data)
+      userValidation(response.body.data)
+    })
+    it('should not be able to get one', async () => {
+      const response = await request(app.server).get(
+        '/admin/users/00000000-0000-0000-0000-000000000000',
+      )
+      expect(response.status).toBe(400)
+      expect(response.body).toHaveProperty('error')
+      expect(response.body).toHaveProperty('message')
+      expect(response.body.message).toEqual('Not found')
     })
   })
 
@@ -32,8 +49,7 @@ describe('admin.users.controller', () => {
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
       expect(response.body).toHaveProperty('data')
-      expect(response.body.data).toHaveLength(1)
-      validateUser(response.body.data[0])
+      userValidation(response.body.data[0])
     })
   })
 
@@ -46,11 +62,12 @@ describe('admin.users.controller', () => {
       const response = await request(app.server)
         .post('/admin/users')
         .send(dataSend)
+
       expect(response.status).toBe(201)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
       expect(response.body).toHaveProperty('data')
-      validateUser(response.body.data)
+      userValidation(response.body.data)
       expect(response.body.data.name).toEqual(dataSend.name)
     })
 
@@ -72,23 +89,47 @@ describe('admin.users.controller', () => {
         name: 'jhon doe',
       }
       const response = await request(app.server)
-        .put('/admin/users/1')
+        .put('/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627')
         .send(dataSend)
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
       expect(response.body).toHaveProperty('data')
-      validateUser(response.body.data)
+      userValidation(response.body.data)
       expect(response.body.data.name).toEqual(dataSend.name)
+    })
+
+    it('should not be able to update', async () => {
+      const response = await request(app.server)
+        .put('/admin/users/00000000-0000-0000-0000-000000000000')
+        .send({
+          name: 'jhon doe',
+        })
+      expect(response.status).toBe(400)
+      expect(response.body).toHaveProperty('error')
+      expect(response.body).toHaveProperty('message')
+      expect(response.body.message).toEqual('Not found')
     })
   })
 
   describe('remove', () => {
     it('should be able to delete', async () => {
-      const response = await request(app.server).delete('/admin/users/1')
+      const response = await request(app.server).delete(
+        '/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627',
+      )
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
+    })
+
+    it('should be able to delete', async () => {
+      const response = await request(app.server).delete(
+        '/admin/users/00000000-0000-0000-0000-000000000000',
+      )
+      expect(response.status).toBe(400)
+      expect(response.body).toHaveProperty('error')
+      expect(response.body).toHaveProperty('message')
+      expect(response.body.message).toEqual('Not found')
     })
   })
 })

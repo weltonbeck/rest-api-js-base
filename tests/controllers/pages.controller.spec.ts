@@ -1,12 +1,14 @@
 import request from 'supertest'
-import app from '../app'
+import app from '../../src/app'
 
 describe('pages.controller', () => {
   beforeAll(async () => {
     await app.ready()
   })
 
-  afterAll(() => app.close())
+  afterAll(() => {
+    app.close()
+  })
 
   it('should get healthcheck', async () => {
     const response = await request(app.server).get('/')

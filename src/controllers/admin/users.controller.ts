@@ -1,38 +1,34 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { z } from 'zod'
-import {
-  createUserSchema,
-  updateUserSchema,
-} from '../../models/schemas/user.schema'
-import { idSchema } from '../../utils/common.schema'
-
-let usersData = [
-  {
-    id: '1',
-    name: 'Ciclano',
-    email: 'ciclano@email.com',
-  },
-]
+import { CreateUser, UpdateUser } from '../../models/interfaces/user.interface'
+import { UserRepository } from '../../models/repositories/user.repository'
+import { Id } from '../../utils/common.interface'
+import { customError } from '../../utils/errors/customError'
 
 export const list = async (request: FastifyRequest, reply: FastifyReply) => {
+  const userRepository = new UserRepository()
+
+  const data = await userRepository.findAll()
+
   return reply.send({
     success: true,
-    data: usersData,
+    data,
   })
 }
 
 export const getOne = async (
   request: FastifyRequest<{
-    Params: z.infer<typeof idSchema>
+    Params: Id
   }>,
   reply: FastifyReply,
 ) => {
   const { id } = request.params
 
-  const user = usersData.find((user) => user.id === id)
+  const userRepository = new UserRepository()
+
+  const user = await userRepository.findById(id)
 
   if (!user) {
-    return reply.code(404).send({ error: 'Not found' })
+    throw customError('Not found')
   }
 
   return reply.send({
@@ -43,67 +39,59 @@ export const getOne = async (
 
 export const create = async (
   request: FastifyRequest<{
-    Body: z.infer<typeof createUserSchema>
+    Body: CreateUser
   }>,
   reply: FastifyReply,
 ) => {
-  const { name, email } = request.body
+  const { body } = request
 
-  const userTemp = {
-    id: String(usersData.length + 1),
-    name,
-    email,
-  }
+  const userRepository = new UserRepository()
 
-  usersData.push(userTemp)
+  const user = await userRepository.create(body)
 
-  return reply.code(201).send({ success: true, data: userTemp })
+  return reply.code(201).send({ success: true, data: user })
 }
 
 export const update = async (
   request: FastifyRequest<{
-    Params: z.infer<typeof idSchema>
-    Body: z.infer<typeof updateUserSchema>
+    Params: Id
+    Body: UpdateUser
   }>,
   reply: FastifyReply,
 ) => {
   const { id } = request.params
-  const { name, email } = request.body
+  const { body } = request
 
-  let user = usersData.find((user) => user.id === id)
+  const userRepository = new UserRepository()
+
+  const user = await userRepository.findById(id)
 
   if (!user) {
-    return reply.code(404).send({ error: 'Not found' })
+    throw customError('Not found')
   }
 
-  usersData = usersData.map((user) =>
-    user.id === id
-      ? { ...user, name: name || user.name, email: email || user.email }
-      : user,
-  )
+  const newUser = await userRepository.update(id, body)
 
-  user = usersData.find((user) => user.id === id)
-
-  return reply.send({ success: true, data: user })
+  return reply.send({ success: true, data: newUser })
 }
 
 export const remove = async (
   request: FastifyRequest<{
-    Params: z.infer<typeof idSchema>
+    Params: Id
   }>,
   reply: FastifyReply,
 ) => {
   const { id } = request.params
 
-  const user = usersData.find((user) => user.id === id)
+  const userRepository = new UserRepository()
+
+  const user = await userRepository.findById(id)
 
   if (!user) {
-    return reply.code(404).send({ error: 'Not found' })
+    throw customError('Not found')
   }
 
-  usersData = usersData.filter((user) => {
-    return user.id !== id
-  })
+  const result = await userRepository.delete(id)
 
-  return reply.send({ success: true })
+  return reply.send({ success: result })
 }

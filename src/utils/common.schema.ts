@@ -2,7 +2,7 @@ import { buildJsonSchemas } from 'fastify-zod'
 import { z } from 'zod'
 
 export const idProps = {
-  id: z.string(),
+  id: z.string().uuid(),
 }
 
 export const commonProps = {
