@@ -1,4 +1,4 @@
-import { prisma } from '../../utils/database'
+import { prisma } from '../../database/prismaClient'
 import { CreateUser, UpdateUser, User } from '../interfaces/user.interface'
 
 export class UserRepository {

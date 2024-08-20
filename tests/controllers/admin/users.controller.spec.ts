@@ -4,6 +4,8 @@ import { clearAllMocks, mockAll } from '../../mocks'
 import { userValidation } from '../../model/entities/user.validate'
 
 describe('admin.users.controller', () => {
+  const token = '123'
+
   beforeAll(async () => {
     await app.ready()
   })
@@ -22,9 +24,9 @@ describe('admin.users.controller', () => {
 
   describe('get one', () => {
     it('should be able to get one', async () => {
-      const response = await request(app.server).get(
-        '/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627',
-      )
+      const response = await request(app.server)
+        .get('/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627')
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
@@ -32,9 +34,9 @@ describe('admin.users.controller', () => {
       userValidation(response.body.data)
     })
     it('should not be able to get one', async () => {
-      const response = await request(app.server).get(
-        '/admin/users/00000000-0000-0000-0000-000000000000',
-      )
+      const response = await request(app.server)
+        .get('/admin/users/00000000-0000-0000-0000-000000000000')
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(400)
       expect(response.body).toHaveProperty('error')
       expect(response.body).toHaveProperty('message')
@@ -44,7 +46,9 @@ describe('admin.users.controller', () => {
 
   describe('list', () => {
     it('should be able to list', async () => {
-      const response = await request(app.server).get('/admin/users')
+      const response = await await request(app.server)
+        .get('/admin/users')
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
@@ -62,6 +66,7 @@ describe('admin.users.controller', () => {
       const response = await request(app.server)
         .post('/admin/users')
         .send(dataSend)
+        .set('authorization', `Bearer ${token}`)
 
       expect(response.status).toBe(201)
       expect(response.body).toHaveProperty('success')
@@ -72,7 +77,10 @@ describe('admin.users.controller', () => {
     })
 
     it('should not be able to create a new', async () => {
-      const response = await request(app.server).post('/admin/users').send({})
+      const response = await request(app.server)
+        .post('/admin/users')
+        .send({})
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(400)
       expect(response.body).toHaveProperty('error')
       expect(response.body.error).toEqual('validation')
@@ -91,6 +99,7 @@ describe('admin.users.controller', () => {
       const response = await request(app.server)
         .put('/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627')
         .send(dataSend)
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
@@ -105,6 +114,7 @@ describe('admin.users.controller', () => {
         .send({
           name: 'jhon doe',
         })
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(400)
       expect(response.body).toHaveProperty('error')
       expect(response.body).toHaveProperty('message')
@@ -114,18 +124,18 @@ describe('admin.users.controller', () => {
 
   describe('remove', () => {
     it('should be able to delete', async () => {
-      const response = await request(app.server).delete(
-        '/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627',
-      )
+      const response = await request(app.server)
+        .delete('/admin/users/f0d0c147-47ff-4de6-af5c-ae0253db7627')
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
     })
 
     it('should be able to delete', async () => {
-      const response = await request(app.server).delete(
-        '/admin/users/00000000-0000-0000-0000-000000000000',
-      )
+      const response = await request(app.server)
+        .delete('/admin/users/00000000-0000-0000-0000-000000000000')
+        .set('authorization', `Bearer ${token}`)
       expect(response.status).toBe(400)
       expect(response.body).toHaveProperty('error')
       expect(response.body).toHaveProperty('message')

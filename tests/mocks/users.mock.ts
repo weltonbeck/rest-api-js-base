@@ -1,4 +1,4 @@
-import { prisma } from '../../src/utils/database'
+import { prisma } from '../../src/database/prismaClient'
 
 export const mockUsers = async () => {
   await prisma.user.createMany({

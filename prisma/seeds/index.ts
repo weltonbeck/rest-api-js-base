@@ -1,4 +1,4 @@
-import { prisma } from '../../src/utils/database'
+import { prisma } from '../../src/database/prismaClient'
 import createSeedUser from './user.seed'
 
 async function seed() {
