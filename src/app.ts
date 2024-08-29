@@ -2,7 +2,7 @@ import 'dotenv/config'
 import fastify from 'fastify'
 import { routes } from './routes'
 import { swaggerRoutes } from './swagger.config'
-import { commonsSchemas } from './utils/common.schema'
+import { commonsSchemas } from './shared/common.schema'
 import { errorHandler } from './utils/errors/errorHandler'
 
 const app = fastify({

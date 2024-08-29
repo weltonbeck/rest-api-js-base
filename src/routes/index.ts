@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { adminRoutes } from './admin'
-import { pagesRoutes } from './pages.routes'
+import { pagesRoutes } from './pages/pages.routes'
 
 export const routes = async (app: FastifyInstance) => {
   app.register(pagesRoutes)

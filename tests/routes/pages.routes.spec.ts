@@ -1,7 +1,7 @@
 import request from 'supertest'
 import app from '../../src/app'
 
-describe('pages.controller', () => {
+describe('pages.routes', () => {
   beforeAll(async () => {
     await app.ready()
   })

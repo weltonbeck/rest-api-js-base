@@ -1,9 +1,10 @@
 import { FastifyInstance } from 'fastify'
-import { adminAuthMiddleware } from '../../middlewares/adminAuth.middleware'
-import { userRoutes } from './user.routes'
+import { administratorRoutes } from './administrators/administrators.routes'
+import { authRoutes } from './auth/auth.routes'
 
 export const adminRoutes = async (app: FastifyInstance) => {
-  app.addHook('preHandler', adminAuthMiddleware)
-
-  app.register(userRoutes, { prefix: 'users' })
+  app.register(authRoutes)
+  app.register(administratorRoutes, {
+    prefix: 'administrators',
+  })
 }

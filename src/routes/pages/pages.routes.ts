@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { healthcheck } from '../controllers/pages.controller'
+import { healthcheck } from './pages.controller'
 
 export const pagesRoutes = async (app: FastifyInstance) => {
   app.get(

@@ -1,10 +1,10 @@
-import { prisma } from '../../src/database/prismaClient'
-import createSeedUser from './user.seed'
+import { prisma } from '../../src/utils/database/prismaClient'
+import createSeedAdministrator from './administrator.seed'
 
 async function seed() {
   console.log(`Start seeding ...`)
 
-  await createSeedUser(prisma)
+  await createSeedAdministrator(prisma)
 
   console.log(`Seeding finished.`)
 }

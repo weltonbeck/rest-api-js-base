@@ -1,9 +1,12 @@
-import { clearMockUsers, mockUsers } from './users.mock'
+import {
+  clearMockAdministrators,
+  mockAdministrators,
+} from './administrator.mock'
 
 export const mockAll = async () => {
-  await mockUsers()
+  await mockAdministrators()
 }
 
 export const clearAllMocks = async () => {
-  await clearMockUsers()
+  await clearMockAdministrators()
 }

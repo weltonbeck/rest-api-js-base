@@ -1,9 +1,16 @@
-model User {
-  @@map("users")
+enum Status {
+  active
+  inactive
+}
+
+model Administrator {
+  @@map("administrators")
 
   id        String      @id @default(uuid()) @db.Uuid
   name      String
   email     String      @unique
+  password  String
+  status    Status?     @default(active)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
