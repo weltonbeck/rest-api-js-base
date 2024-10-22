@@ -1,11 +1,16 @@
 import request from 'supertest'
 import app from '../../../src/app'
 import { jwtVerify } from '../../../src/utils/jwt'
+import { getAdminToken } from '../../helpers'
 import { clearAllMocks, mockAll } from '../../mocks'
+import { administratorValidation } from '../../model/entities/administrator.validate'
 
-describe('admin.administrators.routes', () => {
+describe('admin.auth.routes', () => {
+  let token: string
+
   beforeAll(async () => {
     await app.ready()
+    token = getAdminToken()
   })
 
   afterAll(() => {
@@ -59,6 +64,19 @@ describe('admin.administrators.routes', () => {
       expect(response.body.message).toContain(
         'your email or password is incorrect',
       )
+    })
+  })
+
+  describe('get me', () => {
+    it('should be able to get me', async () => {
+      const response = await request(app.server)
+        .get('/admin/me')
+        .set('authorization', token)
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('success')
+      expect(response.body.success).toEqual(true)
+      expect(response.body).toHaveProperty('data')
+      administratorValidation(response.body.data)
     })
   })
 })

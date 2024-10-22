@@ -10,8 +10,9 @@ export const jwtVerify = (token: string) => {
   }
 }
 
-export const jwtSign = (payload: unknown) => {
-  return jwt.sign(JSON.stringify(payload), JWT_SECRET)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const jwtSign = (payload: any) => {
+  return jwt.sign(payload, JWT_SECRET)
 }
 
 export const jwtDecode = (token: string) => {
@@ -19,7 +20,9 @@ export const jwtDecode = (token: string) => {
   if (verify) {
     const data = jwt.decode(token)
     if (data) {
-      return JSON.parse(String(data))
+      if (typeof data === 'object') {
+        return data
+      }
     }
   }
   return null

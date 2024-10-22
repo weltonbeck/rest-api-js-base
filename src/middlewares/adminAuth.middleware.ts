@@ -1,9 +1,15 @@
 import { FastifyRequest } from 'fastify'
+import { AdministratorRepository } from '../models/repositories/administrator.repository'
+import { Administrator } from '../models/schema/administrator.schema'
 import { customError } from '../utils/errors/customError'
-import { jwtVerify } from '../utils/jwt'
+import { jwtDecode, jwtVerify } from '../utils/jwt'
 
-export const adminAuthMiddleware = async function (req: FastifyRequest) {
-  const { authorization } = req.headers
+type AuthFastifyRequest = FastifyRequest & {
+  authMe?: Administrator
+}
+
+export const adminAuthMiddleware = async (request: AuthFastifyRequest) => {
+  const { authorization } = request.headers
 
   if (!authorization) {
     throw customError('Token authorization is required', 401)
@@ -12,4 +18,29 @@ export const adminAuthMiddleware = async function (req: FastifyRequest) {
   if (!jwtVerify(authorization)) {
     throw customError('Token authorization is invalid', 401)
   }
+  const data = jwtDecode(authorization)
+  if (data && data.id) {
+    const administratorRepository = new AdministratorRepository()
+    const administrator = await administratorRepository.findOne({
+      id: data.id,
+      status: 'active',
+    })
+
+    if (!administrator) {
+      throw customError('User not found', 401)
+    }
+    request.authMe = administrator
+  } else {
+    throw customError('Token authorization is invalid', 401)
+  }
+}
+
+export const getAuthMe = (
+  request: FastifyRequest,
+): Administrator | undefined => {
+  const administrator = (request as AuthFastifyRequest).authMe
+  if (administrator) {
+    return administrator
+  }
+  throw customError('midlewareAuth Not found', 401)
 }

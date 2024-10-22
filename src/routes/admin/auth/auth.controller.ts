@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
+import { getAuthMe } from '../../../middlewares/adminAuth.middleware'
 import { AdministratorRepository } from '../../../models/repositories/administrator.repository'
 import { customError } from '../../../utils/errors/customError'
 import { compareHash } from '../../../utils/hash'
@@ -15,7 +16,7 @@ export const login = async (
 
   const administratorRepository = new AdministratorRepository()
 
-  const administrator = await administratorRepository.findFirst({
+  const administrator = await administratorRepository.findOne({
     email: body.email,
   })
 
@@ -37,5 +38,6 @@ export const login = async (
 }
 
 export const myUser = async (request: FastifyRequest, reply: FastifyReply) => {
-  return reply.send({ success: true })
+  const administrator = getAuthMe(request)
+  return reply.send({ success: true, data: administrator })
 }

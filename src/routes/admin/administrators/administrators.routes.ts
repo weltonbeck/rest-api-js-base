@@ -26,6 +26,7 @@ export const administratorRoutes = async (app: FastifyInstance) => {
               type: 'array',
               items: $ref('publicAdministratorSchema'),
             },
+            paging: $refCommon('pagingSchema'),
           },
         },
       },

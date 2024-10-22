@@ -27,10 +27,18 @@ const errorSchema = z.object({
     .optional(),
 })
 
+export const pagingSchema = z.object({
+  totalItens: z.number(),
+  currentPage: z.number(),
+  totalPages: z.number(),
+  limit: z.number(),
+})
+
 export const { schemas: commonsSchemas, $ref: $refCommon } = buildJsonSchemas(
   {
     idSchema,
     errorSchema,
+    pagingSchema,
   },
   { $id: 'commonsSchemas' },
 )

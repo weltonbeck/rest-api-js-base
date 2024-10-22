@@ -1,20 +1,21 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
+import { AdministratorRepository } from '../../../models/repositories/administrator.repository'
 import {
   CreateAdministrator,
   UpdateAdministrator,
 } from '../../../models/schema/administrator.schema'
-import { AdministratorRepository } from '../../../models/repositories/administrator.repository'
 import { Id } from '../../../shared/common.interface'
 import { customError } from '../../../utils/errors/customError'
 
 export const list = async (request: FastifyRequest, reply: FastifyReply) => {
   const administratorRepository = new AdministratorRepository()
 
-  const data = await administratorRepository.findAll()
+  const data = await administratorRepository.findManyPaginate()
 
   return reply.send({
     success: true,
-    data,
+    data: data.result,
+    paging: data.paging,
   })
 }
 
