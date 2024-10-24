@@ -1,14 +1,10 @@
 import { FastifyInstance } from 'fastify'
 import { adminAuthMiddleware } from '../../../middlewares/adminAuth.middleware'
 import { $refCommon } from '../../../shared/common.schema'
-import {
-  list,
-  getOne,
-  create,
-  update,
-  remove,
-} from './administrators.controller'
+import { AdministratorsController } from './administrators.controller'
 import { administratorSchemas, $ref } from './administrators.schema'
+
+const administratorsController = new AdministratorsController()
 
 export const administratorRoutes = async (app: FastifyInstance) => {
   for (const schema of administratorSchemas) {
@@ -17,6 +13,7 @@ export const administratorRoutes = async (app: FastifyInstance) => {
 
   app.get('/', {
     schema: {
+      querystring: $refCommon('paginateQuerySchema'),
       response: {
         200: {
           type: 'object',
@@ -26,13 +23,13 @@ export const administratorRoutes = async (app: FastifyInstance) => {
               type: 'array',
               items: $ref('publicAdministratorSchema'),
             },
-            paging: $refCommon('pagingSchema'),
+            paginate: $refCommon('paginateSchema'),
           },
         },
       },
     },
     preHandler: [adminAuthMiddleware],
-    handler: list,
+    handler: administratorsController.list,
   })
 
   app.get('/:id', {
@@ -50,7 +47,7 @@ export const administratorRoutes = async (app: FastifyInstance) => {
       },
     },
     preHandler: [adminAuthMiddleware],
-    handler: getOne,
+    handler: administratorsController.getOne,
   })
 
   app.post('/', {
@@ -67,7 +64,7 @@ export const administratorRoutes = async (app: FastifyInstance) => {
       },
     },
     preHandler: [adminAuthMiddleware],
-    handler: create,
+    handler: administratorsController.create,
   })
 
   app.put('/:id', {
@@ -86,7 +83,7 @@ export const administratorRoutes = async (app: FastifyInstance) => {
       },
     },
     preHandler: [adminAuthMiddleware],
-    handler: update,
+    handler: administratorsController.update,
   })
 
   app.delete('/:id', {
@@ -103,6 +100,6 @@ export const administratorRoutes = async (app: FastifyInstance) => {
       },
     },
     preHandler: [adminAuthMiddleware],
-    handler: remove,
+    handler: administratorsController.remove,
   })
 }

@@ -4,98 +4,111 @@ import {
   CreateAdministrator,
   UpdateAdministrator,
 } from '../../../models/schema/administrator.schema'
-import { Id } from '../../../shared/common.interface'
+import { Id, paginateQuery } from '../../../shared/common.interface'
 import { customError } from '../../../utils/errors/customError'
+import { AppController } from '../../app.controller'
 
-export const list = async (request: FastifyRequest, reply: FastifyReply) => {
-  const administratorRepository = new AdministratorRepository()
+export class AdministratorsController extends AppController {
+  async list(
+    request: FastifyRequest<{
+      Querystring: paginateQuery
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { limit, page, orderBy, orderDirection } = request.query
 
-  const data = await administratorRepository.findManyPaginate()
+    const options = {
+      limit,
+      page,
+      orderBy:
+        orderBy && orderDirection
+          ? { [String(orderBy)]: orderDirection }
+          : { createdAt: 'asc' },
+    }
+    const administratorRepository = new AdministratorRepository()
+    const data = await administratorRepository.findManyPaginate(options)
 
-  return reply.send({
-    success: true,
-    data: data.result,
-    paging: data.paging,
-  })
-}
-
-export const getOne = async (
-  request: FastifyRequest<{
-    Params: Id
-  }>,
-  reply: FastifyReply,
-) => {
-  const { id } = request.params
-
-  const administratorRepository = new AdministratorRepository()
-
-  const administrator = await administratorRepository.findById(id)
-
-  if (!administrator) {
-    throw customError('Not found')
+    return reply.send({
+      success: true,
+      data: data.result,
+      paginate: data.paginate,
+    })
   }
 
-  return reply.send({
-    success: true,
-    data: administrator,
-  })
-}
+  async getOne(
+    request: FastifyRequest<{
+      Params: Id
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params
 
-export const create = async (
-  request: FastifyRequest<{
-    Body: CreateAdministrator
-  }>,
-  reply: FastifyReply,
-) => {
-  const { body } = request
+    const administratorRepository = new AdministratorRepository()
+    const administrator = await administratorRepository.findById(id)
 
-  const administratorRepository = new AdministratorRepository()
+    if (!administrator) {
+      throw customError('Not found')
+    }
 
-  const administrator = await administratorRepository.create(body)
-
-  return reply.code(201).send({ success: true, data: administrator })
-}
-
-export const update = async (
-  request: FastifyRequest<{
-    Params: Id
-    Body: UpdateAdministrator
-  }>,
-  reply: FastifyReply,
-) => {
-  const { id } = request.params
-  const { body } = request
-
-  const administratorRepository = new AdministratorRepository()
-
-  const administrator = await administratorRepository.findById(id)
-
-  if (!administrator) {
-    throw customError('Not found')
+    return reply.send({
+      success: true,
+      data: administrator,
+    })
   }
 
-  const newAdministrator = await administratorRepository.update(id, body)
+  async create(
+    request: FastifyRequest<{
+      Body: CreateAdministrator
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { body } = request
 
-  return reply.send({ success: true, data: newAdministrator })
-}
+    const administratorRepository = new AdministratorRepository()
+    const administrator = await administratorRepository.create(body)
 
-export const remove = async (
-  request: FastifyRequest<{
-    Params: Id
-  }>,
-  reply: FastifyReply,
-) => {
-  const { id } = request.params
-
-  const administratorRepository = new AdministratorRepository()
-
-  const administrator = await administratorRepository.findById(id)
-
-  if (!administrator) {
-    throw customError('Not found')
+    return reply.code(201).send({ success: true, data: administrator })
   }
 
-  const result = await administratorRepository.delete(id)
+  async update(
+    request: FastifyRequest<{
+      Params: Id
+      Body: UpdateAdministrator
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params
+    const { body } = request
 
-  return reply.send({ success: result })
+    const administratorRepository = new AdministratorRepository()
+    const administrator = await administratorRepository.findById(id)
+
+    if (!administrator) {
+      throw customError('Not found')
+    }
+
+    const newAdministrator = await administratorRepository.update(id, body)
+
+    return reply.send({ success: true, data: newAdministrator })
+  }
+
+  async remove(
+    request: FastifyRequest<{
+      Params: Id
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { id } = request.params
+
+    const administratorRepository = new AdministratorRepository()
+    const administrator = await administratorRepository.findById(id)
+
+    if (!administrator) {
+      throw customError('Not found')
+    }
+
+    const result = await administratorRepository.delete(id)
+
+    return reply.send({ success: result })
+  }
 }

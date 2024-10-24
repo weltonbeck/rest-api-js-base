@@ -27,18 +27,26 @@ const errorSchema = z.object({
     .optional(),
 })
 
-export const pagingSchema = z.object({
+export const paginateSchema = z.object({
   totalItens: z.number(),
-  currentPage: z.number(),
   totalPages: z.number(),
+  page: z.number(),
   limit: z.number(),
+})
+
+export const paginateQuerySchema = z.object({
+  page: z.number().min(1).optional(),
+  limit: z.number().min(1).optional(),
+  orderBy: z.string().optional(),
+  orderDirection: z.enum(['asc', 'desc']).optional(),
 })
 
 export const { schemas: commonsSchemas, $ref: $refCommon } = buildJsonSchemas(
   {
     idSchema,
     errorSchema,
-    pagingSchema,
+    paginateSchema,
+    paginateQuerySchema,
   },
   { $id: 'commonsSchemas' },
 )

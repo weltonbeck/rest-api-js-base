@@ -1,15 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { Paging } from '../../shared/common.interface'
+import z from 'zod'
+import { Paginate } from '../../shared/common.interface'
+import { customError } from '../../utils/errors/customError'
 
 type OptionsFindEntity = {
   limit?: number
   page?: number
-  where?: any
-  orderBy?: any
+  where?: object
+  include?: object
+  fields?: object
+  orderBy?: object
 }
 
-export class AppRepository<Entity, CreateEntity, UpdateEntity> {
+export class AppRepository<
+  Entity extends z.infer<any>,
+  CreateEntity extends z.infer<any>,
+  UpdateEntity extends z.infer<any>,
+> {
   protected entity
 
   constructor(e: any) {
@@ -19,6 +26,10 @@ export class AppRepository<Entity, CreateEntity, UpdateEntity> {
   async parse(data: Entity): Promise<Entity> {
     await Promise.all([])
     return data as Entity
+  }
+
+  fields() {
+    return Object.keys(this.entity.fields)
   }
 
   async findOne(where: any): Promise<Entity | null> {
@@ -72,18 +83,28 @@ export class AppRepository<Entity, CreateEntity, UpdateEntity> {
 
   async count(options: OptionsFindEntity = {}): Promise<number> {
     const count = await this.entity.count({
-      take: options.limit,
-      skip: options.page,
       where: options.where,
+      include: options.include,
     })
     return count || 0
   }
 
   async findMany(options: OptionsFindEntity = {}): Promise<Entity[]> {
+    if (options.orderBy) {
+      const fields = this.fields()
+      Object.keys(options.orderBy).forEach((field: any) => {
+        if (!fields.includes(field)) {
+          throw customError(`field ${field} not exists`)
+        }
+      })
+    }
+
     const results = await this.entity.findMany({
       where: options.where,
+      include: options.include,
+      fields: options.fields,
       take: options.limit,
-      skip: options.page,
+      skip: (options.page || 0) - 1,
       orderBy: options.orderBy,
     })
 
@@ -98,7 +119,7 @@ export class AppRepository<Entity, CreateEntity, UpdateEntity> {
 
   async findManyPaginate(options: OptionsFindEntity = {}): Promise<{
     result: Entity[]
-    paging: Paging
+    paginate: Paginate
   }> {
     if (!options.limit) {
       options.limit = 20
@@ -107,16 +128,16 @@ export class AppRepository<Entity, CreateEntity, UpdateEntity> {
     const count = await this.count(options)
     const result = await this.findMany(options)
 
-    const paging = {
+    const paginate = {
       totalItens: count,
-      currentPage: options.page || 1,
+      page: options.page || 1,
       totalPages: Math.ceil(count / options.limit),
       limit: options.limit,
     }
 
     return {
       result,
-      paging,
+      paginate,
     }
   }
 }

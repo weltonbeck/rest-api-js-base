@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { idSchema, pagingSchema } from './common.schema'
+import { idSchema, paginateSchema, paginateQuerySchema } from './common.schema'
 
 export interface Id extends z.infer<typeof idSchema> {}
-export interface Paging extends z.infer<typeof pagingSchema> {}
+export interface Paginate extends z.infer<typeof paginateSchema> {}
+export interface paginateQuery extends z.infer<typeof paginateQuerySchema> {}

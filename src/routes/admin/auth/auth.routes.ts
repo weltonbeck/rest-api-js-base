@@ -4,8 +4,10 @@ import {
   $ref as $refAdministrators,
   administratorSchemas,
 } from '../administrators/administrators.schema'
-import { login, myUser } from './auth.controller'
+import { AuthController } from './auth.controller'
 import { $ref, authSchemas } from './auth.schema'
+
+const authController = new AuthController()
 
 export const authRoutes = async (app: FastifyInstance) => {
   for (const schema of authSchemas) {
@@ -30,7 +32,7 @@ export const authRoutes = async (app: FastifyInstance) => {
         },
       },
     },
-    handler: login,
+    handler: authController.login,
   })
 
   app.get('/me', {
@@ -46,6 +48,6 @@ export const authRoutes = async (app: FastifyInstance) => {
       },
     },
     preHandler: [adminAuthMiddleware],
-    handler: myUser,
+    handler: authController.getMe,
   })
 }

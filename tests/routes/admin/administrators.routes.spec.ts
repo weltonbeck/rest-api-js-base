@@ -3,7 +3,7 @@ import app from '../../../src/app'
 import { getAdminToken } from '../../helpers'
 import { clearAllMocks, mockAll } from '../../mocks'
 import { administratorValidation } from '../../model/entities/administrator.validate'
-import { pagingValidation } from '../../shared/common.validate'
+import { paginateValidation } from '../../shared/common.validate'
 
 describe('admin.administrators.routes', () => {
   let token: string
@@ -47,18 +47,20 @@ describe('admin.administrators.routes', () => {
     })
   })
 
-  describe.only('list', () => {
+  describe('list', () => {
     it('should be able to list', async () => {
       const response = await request(app.server)
         .get('/admin/administrators')
+        .query({ page: 1, limit: 1 })
         .set('authorization', token)
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('success')
       expect(response.body.success).toEqual(true)
       expect(response.body).toHaveProperty('data')
+      expect(response.body.data).toHaveLength(1)
       administratorValidation(response.body.data[0])
-      expect(response.body).toHaveProperty('paging')
-      pagingValidation(response.body.paging)
+      expect(response.body).toHaveProperty('paginate')
+      paginateValidation(response.body.paginate)
     })
   })
 

@@ -4,40 +4,43 @@ import { AdministratorRepository } from '../../../models/repositories/administra
 import { customError } from '../../../utils/errors/customError'
 import { compareHash } from '../../../utils/hash'
 import { jwtSign } from '../../../utils/jwt'
+import { AppController } from '../../app.controller'
 import { Login } from './auth.schema'
 
-export const login = async (
-  request: FastifyRequest<{
-    Body: Login
-  }>,
-  reply: FastifyReply,
-) => {
-  const { body } = request
+export class AuthController extends AppController {
+  async login(
+    request: FastifyRequest<{
+      Body: Login
+    }>,
+    reply: FastifyReply,
+  ) {
+    const { body } = request
 
-  const administratorRepository = new AdministratorRepository()
+    const administratorRepository = new AdministratorRepository()
 
-  const administrator = await administratorRepository.findOne({
-    email: body.email,
-  })
+    const administrator = await administratorRepository.findOne({
+      email: body.email,
+    })
 
-  if (administrator) {
-    const passwordMatch = await compareHash(
-      body.password,
-      administrator.password,
-    )
+    if (administrator) {
+      const passwordMatch = await compareHash(
+        body.password,
+        administrator.password,
+      )
 
-    if (passwordMatch) {
-      const token = jwtSign({
-        id: administrator.id,
-      })
-      return reply.send({ success: true, data: { token } })
+      if (passwordMatch) {
+        const token = jwtSign({
+          id: administrator.id,
+        })
+        return reply.send({ success: true, data: { token } })
+      }
     }
+
+    throw customError('your email or password is incorrect')
   }
 
-  throw customError('your email or password is incorrect')
-}
-
-export const myUser = async (request: FastifyRequest, reply: FastifyReply) => {
-  const administrator = getAuthMe(request)
-  return reply.send({ success: true, data: administrator })
+  async getMe(request: FastifyRequest, reply: FastifyReply) {
+    const administrator = getAuthMe(request)
+    return reply.send({ success: true, data: administrator })
+  }
 }
