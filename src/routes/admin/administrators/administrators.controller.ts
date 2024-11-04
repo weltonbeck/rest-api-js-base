@@ -4,29 +4,24 @@ import {
   CreateAdministrator,
   UpdateAdministrator,
 } from '../../../models/schema/administrator.schema'
-import { Id, paginateQuery } from '../../../shared/common.interface'
+import { Id, searchAndPaginateQuery } from '../../../shared/common.interface'
 import { customError } from '../../../utils/errors/customError'
+import { parsePaginateQuery } from '../../../utils/helpers'
 import { AppController } from '../../app.controller'
 
 export class AdministratorsController extends AppController {
   async list(
     request: FastifyRequest<{
-      Querystring: paginateQuery
+      Querystring: searchAndPaginateQuery
     }>,
     reply: FastifyReply,
   ) {
-    const { limit, page, orderBy, orderDirection } = request.query
-
-    const options = {
-      limit,
-      page,
-      orderBy:
-        orderBy && orderDirection
-          ? { [String(orderBy)]: orderDirection }
-          : { createdAt: 'asc' },
-    }
+    const options = parsePaginateQuery(request.query)
     const administratorRepository = new AdministratorRepository()
-    const data = await administratorRepository.findManyPaginate(options)
+    const data = await administratorRepository.findManyPaginate({
+      ...options,
+      search: request.query,
+    })
 
     return reply.send({
       success: true,

@@ -6,7 +6,7 @@ import {
   CreateAdministrator,
   UpdateAdministrator,
 } from '../schema/administrator.schema'
-import { AppRepository } from './app.repository'
+import { AppRepository, OptionsFindEntity } from './app.repository'
 
 export class AdministratorRepository extends AppRepository<
   Administrator,
@@ -15,6 +15,41 @@ export class AdministratorRepository extends AppRepository<
 > {
   constructor() {
     super(prisma.administrator)
+  }
+
+  parseWhere(options: OptionsFindEntity = {}) {
+    options.where = options.where || {}
+    if (options.search) {
+      if (options.search.name) {
+        options.where = Object.assign(options.where, {
+          name: { contains: options.search.name },
+        })
+      }
+      if (options.search.email) {
+        options.where = Object.assign(options.where, {
+          email: { contains: options.search.email },
+        })
+      }
+      if (options.search.status) {
+        options.where = Object.assign(options.where, {
+          status: options.search.status,
+        })
+      }
+      if (options.search.search) {
+        options.where = Object.assign(options.where, {
+          AND: [
+            {
+              OR: [
+                { name: { contains: options.search.search } },
+                { email: { contains: options.search.search } },
+              ],
+            },
+          ],
+        })
+      }
+    }
+
+    return super.parseWhere(options)
   }
 
   async create(data: CreateAdministrator): Promise<Administrator> {

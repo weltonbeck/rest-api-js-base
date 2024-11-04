@@ -16,6 +16,15 @@ export const swaggerRoutes = async (app: FastifyInstance) => {
       consumes: ['application/json'],
       produces: ['application/json'],
       tags: [],
+      components: {
+        securitySchemes: {
+          authorization: {
+            type: 'http',
+            scheme: 'bearer',
+          },
+        },
+      },
+      security: [{ authorization: [] }],
     },
   }
 
@@ -25,6 +34,7 @@ export const swaggerRoutes = async (app: FastifyInstance) => {
     staticCSP: true,
   }
 
-  app.register(fastifySwagger, swaggerOptions)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  app.register(fastifySwagger, swaggerOptions as any)
   app.register(fastifySwaggerUi, swaggerUiOptions)
 }

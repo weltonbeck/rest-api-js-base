@@ -62,6 +62,23 @@ describe('admin.administrators.routes', () => {
       expect(response.body).toHaveProperty('paginate')
       paginateValidation(response.body.paginate)
     })
+
+    it('should be able to list search field', async () => {
+      const searchName = 'Beltrano'
+      const response = await request(app.server)
+        .get('/admin/administrators')
+        .query({ search: searchName })
+        .set('authorization', token)
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('success')
+      expect(response.body.success).toEqual(true)
+      expect(response.body).toHaveProperty('data')
+      expect(response.body.data).toHaveLength(1)
+      administratorValidation(response.body.data[0])
+      expect(response.body.data[0].name).toStrictEqual(searchName)
+      expect(response.body).toHaveProperty('paginate')
+      paginateValidation(response.body.paginate)
+    })
   })
 
   describe('create a new', () => {

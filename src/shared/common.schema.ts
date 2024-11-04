@@ -41,12 +41,23 @@ export const paginateQuerySchema = z.object({
   orderDirection: z.enum(['asc', 'desc']).optional(),
 })
 
+export const searchQuerySchema = z.object({
+  search: z.string().optional(),
+})
+
+export const searchAndPaginateQuerySchema = z.object({
+  ...paginateQuerySchema.shape,
+  ...searchQuerySchema.shape,
+})
+
 export const { schemas: commonsSchemas, $ref: $refCommon } = buildJsonSchemas(
   {
     idSchema,
     errorSchema,
     paginateSchema,
     paginateQuerySchema,
+    searchQuerySchema,
+    searchAndPaginateQuerySchema,
   },
   { $id: 'commonsSchemas' },
 )

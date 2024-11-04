@@ -3,13 +3,14 @@ import z from 'zod'
 import { Paginate } from '../../shared/common.interface'
 import { customError } from '../../utils/errors/customError'
 
-type OptionsFindEntity = {
+export type OptionsFindEntity = {
   limit?: number
   page?: number
   where?: object
   include?: object
   fields?: object
   orderBy?: object
+  search?: any
 }
 
 export class AppRepository<
@@ -81,9 +82,15 @@ export class AppRepository<
     return !!result
   }
 
+  parseWhere(options: OptionsFindEntity = {}) {
+    options.where = options.where || {}
+
+    return options.where
+  }
+
   async count(options: OptionsFindEntity = {}): Promise<number> {
     const count = await this.entity.count({
-      where: options.where,
+      where: this.parseWhere(options),
       include: options.include,
     })
     return count || 0
@@ -100,7 +107,7 @@ export class AppRepository<
     }
 
     const results = await this.entity.findMany({
-      where: options.where,
+      where: this.parseWhere(options),
       include: options.include,
       fields: options.fields,
       take: options.limit,

@@ -15,10 +15,10 @@ export const adminAuthMiddleware = async (request: AuthFastifyRequest) => {
     throw customError('Token authorization is required', 401)
   }
 
-  if (!jwtVerify(authorization)) {
+  if (!jwtVerify(authorization.slice(7))) {
     throw customError('Token authorization is invalid', 401)
   }
-  const data = jwtDecode(authorization)
+  const data = jwtDecode(authorization.slice(7))
   if (data && data.id) {
     const administratorRepository = new AdministratorRepository()
     const administrator = await administratorRepository.findOne({

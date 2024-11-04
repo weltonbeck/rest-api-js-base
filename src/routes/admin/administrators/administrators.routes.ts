@@ -13,7 +13,17 @@ export const administratorRoutes = async (app: FastifyInstance) => {
 
   app.get('/', {
     schema: {
-      querystring: $refCommon('paginateQuerySchema'),
+      // headers: {
+      //   type: 'object',
+      //   properties: {
+      //     authorization: {
+      //       type: 'string',
+      //       description: 'api token',
+      //     },
+      //   },
+      //   required: ['authorization'],
+      // },
+      querystring: $ref('administratorsSearchAndPaginateQuerySchema'),
       response: {
         200: {
           type: 'object',
