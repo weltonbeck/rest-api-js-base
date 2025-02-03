@@ -31,6 +31,7 @@ export const authRoutes = async (app: FastifyInstance) => {
           },
         },
       },
+      security: [],
     },
     handler: authController.login,
   })

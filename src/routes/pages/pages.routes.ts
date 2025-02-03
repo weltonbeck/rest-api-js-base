@@ -14,6 +14,7 @@ export const pagesRoutes = async (app: FastifyInstance) => {
           },
         },
       },
+      security: [],
     },
     handler: pagesController.healthcheck,
   })

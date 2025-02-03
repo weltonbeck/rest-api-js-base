@@ -32,6 +32,9 @@ export const swaggerRoutes = async (app: FastifyInstance) => {
     routePrefix: '/docs',
     exposeRoute: true,
     staticCSP: true,
+    uiConfig: {
+      deepLinking: false,
+    },
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
